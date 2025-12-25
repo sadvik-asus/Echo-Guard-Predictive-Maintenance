@@ -7,18 +7,31 @@ import librosa.display
 import matplotlib.pyplot as plt
 from PIL import Image
 import os
-
+import gdown
 # --- PAGE CONFIGURATION ---
-st.set_page_config(page_title="Echo-Guard Dashboard", page_icon="🔊", layout="wide")
+# st.set_page_config(page_title="Echo-Guard Dashboard", page_icon="🔊", layout="wide")
 
-# --- LOAD MODEL ---
-# We use @st.cache_resource so we only load the heavy model once, not every time you click a button
+# # --- LOAD MODEL ---
+# # We use @st.cache_resource so we only load the heavy model once, not every time you click a button
+# @st.cache_resource
+# def load_model():
+#     return tf.keras.models.load_model(r"C:\Users\vadla\Documents\Echo-Guard\src\echo_guard_model.keras")
+
+# model = load_model()
 @st.cache_resource
-def load_model():
-    return tf.keras.models.load_model(r"C:\Users\vadla\Documents\Echo-Guard\src\echo_guard_model.keras")
+def load_model_from_drive():
+    # Replace with your actual file ID from Google Drive
+    file_id = '1A_slcn6AxLLuo7UP3qrc7JOMfgdKK-xy'
+    url = f'https://drive.google.com/file/d/1A_slcn6AxLLuo7UP3qrc7JOMfgdKK-xy/view?usp=sharing'
+    output = 'echo_guard_model.keras'
+    
+    if not os.path.exists(output):
+        gdown.download(url, output, quiet=False)
+    
+    return tf.keras.models.load_model(output)
 
-model = load_model()
-
+# Use the function to load the model
+model = load_model_from_drive()
 # --- UTILITY FUNCTIONS ---
 def create_spectrogram(audio_file):
     """
@@ -161,4 +174,5 @@ with col2:
         else:
             st.error("🚨 CRITICAL FAULT DETECTED")
             st.write("Abnormal vibration patterns detected. Inspect bearing components immediately.")
+
             st.warning("Recommended Action: Schedule downtime for maintenance.")
