@@ -2,6 +2,21 @@
 
 **Echo-Guard** is an end-to-end Deep Learning application designed to predict machinery failure before it happens. It processes raw vibration sensor data from the NASA Bearing Dataset, converts signals into Mel-Spectrograms, and uses a Convolutional Neural Network (CNN) to classify equipment health in real-time.
 
+
+---
+
+## 🏗️ Architecture
+
+```mermaid
+graph TD
+    A[Raw Vibration Data] -->|preprocessing.py| B(Mel-Spectrograms)
+    B -->|train_model.py| C{CNN Model}
+    C -->|echo_guard_model.keras| D[Saved Weights]
+    E[User Audio Upload] -->|app.py| F(Dashboard)
+    F -->|Inference| C
+    C -->|Result| F
+```
+
 ## 🚀 Key Features
 * **Signal Processing:** Automated pipeline to convert Time-Domain vibration data to Frequency-Domain Spectrograms using `Librosa`.
 * **Deep Learning:** Custom 2D-CNN architecture built in `TensorFlow/Keras` achieving >95% accuracy.
