@@ -28,3 +28,4 @@ pip install -r requirements.txt
 
 # 2. Run the Dashboard
 streamlit run app.py
+```
