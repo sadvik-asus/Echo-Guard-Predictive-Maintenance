@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import os
 
 # --- CONFIGURATION ---
-DATA_DIR = r"C:\Users\vadla\Documents\Echo-Guard\data\processed"
+DATA_DIR = r"../data/processed"
 IMG_HEIGHT = 256  # Resize images to this for the model
 IMG_WIDTH = 256
 BATCH_SIZE = 32
