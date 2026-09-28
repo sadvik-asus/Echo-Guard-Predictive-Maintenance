@@ -8,6 +8,7 @@
     <img src="https://img.shields.io/badge/TensorFlow-2.x-orange.svg" alt="TensorFlow">
     <img src="https://img.shields.io/badge/Streamlit-UI-red.svg" alt="Streamlit">
     <img src="https://img.shields.io/badge/Docker-Ready-2496ED.svg" alt="Docker">
+    <img src="https://img.shields.io/badge/RAG-Enabled-5856D6.svg" alt="RAG">
   </p>
 </div>
 
