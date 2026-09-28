@@ -176,3 +176,5 @@ with col2:
             st.write("Abnormal vibration patterns detected. Inspect bearing components immediately.")
 
             st.warning("Recommended Action: Schedule downtime for maintenance.")
+
+# Updated frontend structure
