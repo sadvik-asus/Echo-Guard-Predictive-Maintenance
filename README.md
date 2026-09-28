@@ -57,11 +57,30 @@ EchoGuard/
 3.  **Inference:** The CNN analyzes the visual pattern of the spectrogram.
 4.  **Output:** Returns a confidence score and a Go/No-Go maintenance alert.
 
-## 💻 How to Run
-```bash
-# 1. Install Dependencies
-pip install -r requirements.txt
+## 💻 Quickstart Guide
 
-# 2. Run the Dashboard
+### 1. Clone the repository
+```bash
+git clone https://github.com/sadvik-asus/Echo-Guard-Predictive-Maintenance.git
+cd Echo-Guard-Predictive-Maintenance
+```
+
+### 2. Create and activate a virtual environment
+```bash
+python -m venv venv
+# On Windows:
+.\venv\Scripts\activate
+# On Mac/Linux:
+source venv/bin/activate
+```
+
+### 3. Install dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Run the Dashboard
+```bash
+cd frontend
 streamlit run app.py
 ```
