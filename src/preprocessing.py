@@ -6,8 +6,8 @@ import librosa.display
 import matplotlib.pyplot as plt
 
 # --- CONFIGURATION ---
-RAW_DATA_PATH = r"C:\Users\vadla\Documents\Echo-Guard\data\raw\2nd_test\2nd_test"# Adjust based on your extracted folder name
-OUTPUT_PATH = r"C:\Users\vadla\Documents\Echo-Guard\data\processed"
+RAW_DATA_PATH = r"../data/raw"# Adjust based on your extracted folder name
+OUTPUT_PATH = r"../data/processed"
 SAMPLE_RATE = 20000 # The NASA sensors recorded at 20kHz
 
 # Ensure output directories exist
