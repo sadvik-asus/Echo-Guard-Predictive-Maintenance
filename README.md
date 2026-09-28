@@ -13,7 +13,7 @@
 
 ---
 
-## 📖 Table of Contents
+##  Table of Contents
 - [About the Project](#about-the-project)
 - [Architecture & Workflow](#architecture--workflow)
 - [Project Structure](#project-structure)
@@ -23,7 +23,7 @@
 
 ---
 
-## 🔍 About the Project
+##  About the Project
 
 **Echo-Guard** processes raw vibration sensor data (e.g., NASA Bearing Dataset), converts the time-domain signals into Frequency-Domain Mel-Spectrograms, and uses a custom Convolutional Neural Network (CNN) to classify equipment health in real-time. 
 
@@ -35,7 +35,7 @@
 
 ---
 
-## 🏗️ Architecture & Workflow
+##  Architecture & Workflow
 
 ```mermaid
 graph TD
@@ -71,7 +71,7 @@ EchoGuard/
 
 ---
 
-## 💻 Quickstart Guide
+##  Quickstart Guide
 
 ### 1. Local Setup
 Ensure you have Python 3.9+ installed.
@@ -115,7 +115,7 @@ Access the dashboard at `http://localhost:8501`.
 
 ---
 
-## 🧠 Model Details
+##  Model Details
 The AI engine uses a custom Sequential CNN architecture designed specifically for image-based spectrogram classification:
 * **Input Shape:** 256x256x3 (RGB Spectrograms)
 * **Feature Extraction:** 3 Convolutional Blocks (16 -> 32 -> 64 filters) with MaxPooling.
