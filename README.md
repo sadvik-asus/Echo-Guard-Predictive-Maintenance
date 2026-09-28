@@ -17,6 +17,27 @@ graph TD
     C -->|Result| F
 ```
 
+
+## 📂 Project Structure
+
+```text
+EchoGuard/
+├── data/
+│   ├── raw/                # NASA raw vibration datasets
+│   └── processed/          # Generated Mel-spectrogram images
+├── frontend/
+│   └── app.py              # Streamlit dashboard
+├── models/
+│   ├── model.py            # Model architecture definitions
+│   └── echo_guard_model.keras # Saved weights (downloaded on first run)
+├── src/
+│   ├── preprocessing.py    # STFT & Spectrogram generation
+│   ├── train_model.py      # Keras CNN training loop
+│   └── __init__.py
+├── requirements.txt        # Python dependencies
+└── README.md               # This file
+```
+
 ## 🚀 Key Features
 * **Signal Processing:** Automated pipeline to convert Time-Domain vibration data to Frequency-Domain Spectrograms using `Librosa`.
 * **Deep Learning:** Custom 2D-CNN architecture built in `TensorFlow/Keras` achieving >95% accuracy.
