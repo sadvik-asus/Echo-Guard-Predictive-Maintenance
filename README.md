@@ -112,7 +112,7 @@ docker build -t echo-guard-app:latest .
 ```bash
 docker run -p 8501:8501 echo-guard-app:latest
 ```
-Access the dashboard at `http://localhost:8501`.
+Access the dashboard :  `http://localhost:8501`.
 
 ---
 
