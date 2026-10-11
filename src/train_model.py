@@ -8,35 +8,52 @@ import tensorflow as tf
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 from models.model import build_echo_guard_cnn
-
-# --- CONFIGURATION ---
-DATA_DIR = r"../data/processed"
-IMG_HEIGHT = 256  # Resize images to this for the model
-IMG_WIDTH = 256
-BATCH_SIZE = 32
+from src.config import (
+    PROCESSED_DATA_PATH,
+    DEFAULT_MODEL_PATH,
+    IMG_HEIGHT,
+    IMG_WIDTH,
+    BATCH_SIZE,
+    EPOCHS,
+    LEARNING_RATE,
+    DROPOUT_RATE,
+    VALIDATION_SPLIT,
+    RANDOM_SEED,
+)
 
 def train_model():
     print("Loading images from disk...")
     
-    # 1. Load Data using Keras utility
-    # This automatically splits into Train (80%) and Validation (20%)
-    train_ds = tf.keras.utils.image_dataset_from_directory(
-        DATA_DIR,
-        validation_split=0.2,
-        subset="training",
-        seed=123,
-        image_size=(IMG_HEIGHT, IMG_WIDTH),
-        batch_size=BATCH_SIZE
-    )
+    # Verify dataset directory exists and has image data
+    if not PROCESSED_DATA_PATH.exists():
+        print(f"Error: Processed data path {PROCESSED_DATA_PATH} not found.")
+        print("Please run 'python src/generate_sample_data.py' or 'python src/preprocessing.py' first.")
+        return
 
-    val_ds = tf.keras.utils.image_dataset_from_directory(
-        DATA_DIR,
-        validation_split=0.2,
-        subset="validation",
-        seed=123,
-        image_size=(IMG_HEIGHT, IMG_WIDTH),
-        batch_size=BATCH_SIZE
-    )
+    # 1. Load Data using Keras utility
+    # This automatically splits into Train and Validation sets
+    try:
+        train_ds = tf.keras.utils.image_dataset_from_directory(
+            str(PROCESSED_DATA_PATH),
+            validation_split=VALIDATION_SPLIT,
+            subset="training",
+            seed=RANDOM_SEED,
+            image_size=(IMG_HEIGHT, IMG_WIDTH),
+            batch_size=BATCH_SIZE
+        )
+
+        val_ds = tf.keras.utils.image_dataset_from_directory(
+            str(PROCESSED_DATA_PATH),
+            validation_split=VALIDATION_SPLIT,
+            subset="validation",
+            seed=RANDOM_SEED,
+            image_size=(IMG_HEIGHT, IMG_WIDTH),
+            batch_size=BATCH_SIZE
+        )
+    except ValueError as err:
+        print(f"Error loading dataset: {err}")
+        print("Ensure 'data/processed/healthy' and 'data/processed/faulty' contain spectrogram PNGs.")
+        return
 
     # 2. Performance Tuning (Prefetching data to RAM)
     AUTOTUNE = tf.data.AUTOTUNE
@@ -47,14 +64,14 @@ def train_model():
     print("Building the Neural Network using modular EchoGuard architecture...")
     model = build_echo_guard_cnn(
         input_shape=(IMG_HEIGHT, IMG_WIDTH, 3),
-        dropout_rate=0.5,
-        learning_rate=1e-3,
+        dropout_rate=DROPOUT_RATE,
+        learning_rate=LEARNING_RATE,
         compile_model=True
     )
     model.summary()
 
     # 4. Setup Callbacks
-    model_save_path = "echo_guard_model.keras"
+    model_save_path = str(DEFAULT_MODEL_PATH)
     callbacks = [
         tf.keras.callbacks.EarlyStopping(
             monitor="val_loss",
@@ -72,7 +89,7 @@ def train_model():
 
     # 5. Train the Model
     print("Starting Training...")
-    epochs = 15
+    epochs = EPOCHS
     history = model.fit(
         train_ds,
         validation_data=val_ds,
