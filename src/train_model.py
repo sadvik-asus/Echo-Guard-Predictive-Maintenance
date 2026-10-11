@@ -1,7 +1,13 @@
-import tensorflow as tf
-from keras import layers, models
-import matplotlib.pyplot as plt
 import os
+import sys
+from pathlib import Path
+import matplotlib.pyplot as plt
+import tensorflow as tf
+
+# Ensure project root is in sys.path
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
+from models.model import build_echo_guard_cnn
 
 # --- CONFIGURATION ---
 DATA_DIR = r"../data/processed"
@@ -38,48 +44,45 @@ def train_model():
     val_ds = val_ds.cache().prefetch(buffer_size=AUTOTUNE)
 
     # 3. Build the CNN Architecture
-    print("Building the Neural Network...")
-    model = models.Sequential([
-        # Rescaling: Convert pixel values from 0-255 to 0-1
-        layers.Rescaling(1./255, input_shape=(IMG_HEIGHT, IMG_WIDTH, 3)),
-        
-        # Convolutional Block 1
-        layers.Conv2D(16, 3, padding='same', activation='relu'),
-        layers.MaxPooling2D(),
-        
-        # Convolutional Block 2
-        layers.Conv2D(32, 3, padding='same', activation='relu'),
-        layers.MaxPooling2D(),
-        
-        # Convolutional Block 3
-        layers.Conv2D(64, 3, padding='same', activation='relu'),
-        layers.MaxPooling2D(),
-        
-        # Classifier Head
-        layers.Flatten(),
-        layers.Dense(128, activation='relu'),
-        layers.Dropout(0.5), # Prevents overfitting
-        layers.Dense(1, activation='sigmoid') # Output: 0 (Healthy) to 1 (Faulty)
-    ])
-
-    model.compile(optimizer='adam',
-                  loss='binary_crossentropy',
-                  metrics=['accuracy'])
-
+    print("Building the Neural Network using modular EchoGuard architecture...")
+    model = build_echo_guard_cnn(
+        input_shape=(IMG_HEIGHT, IMG_WIDTH, 3),
+        dropout_rate=0.5,
+        learning_rate=1e-3,
+        compile_model=True
+    )
     model.summary()
 
-    # 4. Train the Model
+    # 4. Setup Callbacks
+    model_save_path = "echo_guard_model.keras"
+    callbacks = [
+        tf.keras.callbacks.EarlyStopping(
+            monitor="val_loss",
+            patience=5,
+            restore_best_weights=True,
+            verbose=1
+        ),
+        tf.keras.callbacks.ModelCheckpoint(
+            filepath=model_save_path,
+            monitor="val_accuracy",
+            save_best_only=True,
+            verbose=1
+        )
+    ]
+
+    # 5. Train the Model
     print("Starting Training...")
-    epochs = 10
+    epochs = 15
     history = model.fit(
         train_ds,
         validation_data=val_ds,
-        epochs=epochs
+        epochs=epochs,
+        callbacks=callbacks
     )
 
-    # 5. Save the Model
-    model.save('echo_guard_model.keras')
-    print("Model saved as 'echo_guard_model.keras'!")
+    # 6. Save Final Model State
+    model.save(model_save_path)
+    print(f"Model saved successfully as '{model_save_path}'!")
 
     # 6. Visualize Results
     acc = history.history['accuracy']
