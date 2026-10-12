@@ -6,3 +6,4 @@ tensorflow
 streamlit
 gdown
 Pillow
+pytest>=7.0.0
