@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 from pathlib import Path
 import matplotlib.pyplot as plt
 import tensorflow as tf
@@ -21,7 +22,7 @@ from src.config import (
     RANDOM_SEED,
 )
 
-def train_model():
+def train_model(epochs: int = EPOCHS, batch_size: int = BATCH_SIZE, show_plot: bool = True):
     print("Loading images from disk...")
     
     # Verify dataset directory exists and has image data
@@ -101,25 +102,60 @@ def train_model():
     model.save(model_save_path)
     print(f"Model saved successfully as '{model_save_path}'!")
 
-    # 6. Visualize Results
-    acc = history.history['accuracy']
-    val_acc = history.history['val_accuracy']
-    loss = history.history['loss']
-    val_loss = history.history['val_loss']
+    # 6. Visualize and Save Training Artifacts
+    acc = history.history.get('accuracy', [])
+    val_acc = history.history.get('val_accuracy', [])
+    loss = history.history.get('loss', [])
+    val_loss = history.history.get('val_loss', [])
+    epochs_trained = list(range(1, len(acc) + 1))
 
-    plt.figure(figsize=(8, 8))
+    # Export metrics JSON
+    metrics_path = DEFAULT_MODEL_PATH.parent / "training_metrics.json"
+    with open(metrics_path, "w", encoding="utf-8") as f:
+        json.dump({
+            "epochs_completed": len(epochs_trained),
+            "final_train_accuracy": float(acc[-1]) if acc else None,
+            "final_val_accuracy": float(val_acc[-1]) if val_acc else None,
+            "final_train_loss": float(loss[-1]) if loss else None,
+            "final_val_loss": float(val_loss[-1]) if val_loss else None,
+            "history": history.history
+        }, f, indent=2)
+    print(f"Metrics saved to {metrics_path}")
+
+    # Plot training curves
+    plt.figure(figsize=(10, 4))
     plt.subplot(1, 2, 1)
-    plt.plot(range(epochs), acc, label='Training Accuracy')
-    plt.plot(range(epochs), val_acc, label='Validation Accuracy')
+    plt.plot(epochs_trained, acc, label='Training Accuracy', marker='o')
+    plt.plot(epochs_trained, val_acc, label='Validation Accuracy', marker='s')
+    plt.xlabel('Epoch')
+    plt.ylabel('Accuracy')
     plt.legend(loc='lower right')
-    plt.title('Training and Validation Accuracy')
+    plt.title('Training & Validation Accuracy')
+    plt.grid(True, linestyle='--', alpha=0.5)
 
     plt.subplot(1, 2, 2)
-    plt.plot(range(epochs), loss, label='Training Loss')
-    plt.plot(range(epochs), val_loss, label='Validation Loss')
+    plt.plot(epochs_trained, loss, label='Training Loss', marker='o')
+    plt.plot(epochs_trained, val_loss, label='Validation Loss', marker='s')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
     plt.legend(loc='upper right')
-    plt.title('Training and Validation Loss')
-    plt.show()
+    plt.title('Training & Validation Loss')
+    plt.grid(True, linestyle='--', alpha=0.5)
+
+    history_plot_path = DEFAULT_MODEL_PATH.parent / "training_history.png"
+    plt.savefig(history_plot_path, bbox_inches='tight')
+    print(f"Training curves saved to {history_plot_path}")
+
+    if show_plot:
+        plt.show()
+    plt.close()
 
 if __name__ == "__main__":
-    train_model()
+    import argparse
+    parser = argparse.ArgumentParser(description="EchoGuard CNN Training Pipeline")
+    parser.add_argument("--epochs", type=int, default=EPOCHS, help="Number of training epochs")
+    parser.add_argument("--batch-size", type=int, default=BATCH_SIZE, help="Training batch size")
+    parser.add_argument("--no-plot", action="store_true", help="Suppress GUI plot window")
+    args = parser.parse_args()
+
+    train_model(epochs=args.epochs, batch_size=args.batch_size, show_plot=not args.no_plot)
